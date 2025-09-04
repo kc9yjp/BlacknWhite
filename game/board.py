@@ -196,7 +196,9 @@ class Board:
         # Evaluate all possible moves and choose the best one
         best_move = None
         best_flips = []
-        for move_square, move_flips in moves["moves"].items():
+        move_items = list(moves["moves"].items())
+        random.shuffle(move_items)
+        for move_square, move_flips in move_items:
             if not best_move or len(move_flips) > len(best_flips):
                 best_move = move_square
                 best_flips = move_flips
@@ -210,8 +212,8 @@ class Board:
             return None, None
         # Evaluate all possible moves and choose the best one
         ranked_moves = []
-        
-        for move_square, move_flips in moves["moves"].items():
+        move_items = list(moves["moves"].items())
+        for move_square, move_flips in move_items:
             row, col = move_square
             score = 0
             # Prioritize corners
