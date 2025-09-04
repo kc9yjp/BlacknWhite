@@ -118,21 +118,21 @@ class Board:
         results = {"color": self.current_turn, "moves": {}}
 
         for sq in self.open_squares():
-            move_paths = [self.north_coords(sq), self.south_coords(sq), self.east_coords(sq), self.west_coords(sq),
+            paths = [self.north_coords(sq), self.south_coords(sq), self.east_coords(sq), self.west_coords(sq),
                           self.northeast_coords(sq), self.northwest_coords(sq), self.southeast_coords(sq),
                           self.southwest_coords(sq)]
             # foreach path, get the valid moves
-            move_list = []
-            for path in move_paths:
-                moves = self.get_moves(path)
-                if moves:
-                    move_list.append(moves)
-            if move_list:
-                results["moves"][sq] = move_list
+            flip_list = []
+            for path in paths:
+                flips = self.get_flips(path)
+                if flips:
+                    flip_list.extend(flips)
+            if flip_list:
+                results["moves"][sq] = flip_list
 
         return results
     
-    def get_moves(self, square_list):
+    def get_flips(self, square_list):
         if not square_list or len(square_list) < 1:
             return []
         moves = []

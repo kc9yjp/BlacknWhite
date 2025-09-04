@@ -16,7 +16,7 @@ if __name__ == "__main__":
     moves = board.open_moves()
     print(f"\nAvailable moves for {moves['color'].name}:")
     for square in moves['moves'].keys():
-        print(f"  {square}:")
-        for path in moves['moves'][square]:
-            print(f"    {path}")
+        print(f"Square: {square}:")
+        for flips in moves['moves'][square]:
+            print(f"   Flips: {flips}")
 
