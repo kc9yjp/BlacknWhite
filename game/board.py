@@ -227,7 +227,7 @@ class Board:
             # Avoid 1-square next to corners
             elif (row in [1, self.size - 2] and col in [1, self.size - 2]) or \
                  (col in [1, self.size - 2] and row in [1, self.size - 2]):
-                score -= 30 + len(move_flips)
+                score -= 50 + len(move_flips)
             # Avoid 1-squares from edges
             elif row in [1, self.size - 2] or col in [1, self.size - 2]:
                 score -= 10 + len(move_flips)

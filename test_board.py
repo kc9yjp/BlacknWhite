@@ -18,8 +18,11 @@ if __name__ == "__main__":
         for square in turn['moves'].keys():
             print(f"Square {square} flips {turn['moves'][square]} pieces")
 
-        move_square, move_flips = board.make_random_move()
-        print(f"Making move at {move_square} flipping {move_flips} pieces")
+        move_square, move_flips = board.make_smart_move()
+        if move_square is None:
+            print(f"{turn['color'].name} has no moves and must pass.")
+        else:
+            print(f"Making move at {move_square} flipping {move_flips} pieces")
 
         print(board)
 
