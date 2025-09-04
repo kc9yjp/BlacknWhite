@@ -9,3 +9,6 @@ from game import Board
 if __name__ == "__main__":
     board = Board()
     print(board)
+
+    for s in board.empty_squares():
+        print(s)
