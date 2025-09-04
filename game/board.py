@@ -216,21 +216,21 @@ class Board:
             score = 0
             # Prioritize corners
             if (row, col) in [(0, 0), (0, self.size - 1), (self.size - 1, 0), (self.size - 1, self.size - 1)]:
-                score += 100 + len(move_flips)
+                score += 10 + len(move_flips)
             # Avoid edges next to corners   
             elif (row == 0 and col in [1, self.size - 2]) or (row == self.size - 1 and col in [1, self.size - 2]) or \
                  (col == 0 and row in [1, self.size - 2]) or (col == self.size - 1 and row in [1, self.size - 2]):
-                score -= 50 + len(move_flips)
+                score -= 5 + len(move_flips)
             # Prioritize edges
             elif row == 0 or row == self.size - 1 or col == 0 or col == self.size - 1:
-                score += 10 + len(move_flips)
+                score += 5 + len(move_flips)
             # Avoid 1-square next to corners
             elif (row in [1, self.size - 2] and col in [1, self.size - 2]) or \
                  (col in [1, self.size - 2] and row in [1, self.size - 2]):
-                score -= 50 + len(move_flips)
+                score -= 6 + len(move_flips)
             # Avoid 1-squares from edges
             elif row in [1, self.size - 2] or col in [1, self.size - 2]:
-                score -= 10 + len(move_flips)
+                score -= 4 + len(move_flips)
             else:
                 score += len(move_flips)
 

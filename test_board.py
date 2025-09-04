@@ -9,7 +9,7 @@ from game import Square
 
 if __name__ == "__main__":
     board = Board()
-    print(board)
+    print(str(board).replace('O', ' '))
 
 
     while not board.game_over():
@@ -27,7 +27,7 @@ if __name__ == "__main__":
         else:
             print(f"Making move at {move_square} flipping {move_flips} pieces")
 
-        print(board)
+        print(str(board).replace('O', ' '))
 
 
     white_count = board.count(Square.WHITE)
