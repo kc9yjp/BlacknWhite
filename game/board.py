@@ -22,6 +22,9 @@ class Board:
         self.grid[3][4] = Square.BLACK
         self.grid[4][3] = Square.BLACK
         self.grid[4][4] = Square.WHITE
+        self.pass_count = 0
+        self.consecutive_passes = 0
+
 
     def north_coords(self, pos):
         row, col = pos
@@ -114,7 +117,19 @@ class Board:
                     count += 1
         return count
 
+    def pass_turn(self):
+        if self.game_over():
+            raise Exception("Game is over, cannot pass turn.")
+        self.pass_count += 1
+        self.consecutive_passes += 1
+        self.current_turn = Square.BLACK if self.current_turn == Square.WHITE else Square.WHITE
+
+    def game_over(self):
+        return self.consecutive_passes >= 2 or self.open_count() == 0
+
     def open_moves(self):
+        if self.game_over():
+            raise Exception("Game is over, cannot make a move.")
         results = {"color": self.current_turn, "moves": {}}
 
         for sq in self.open_squares():
@@ -151,3 +166,11 @@ class Board:
         if anchor and moves:
             return moves
         return []
+    
+    def make_move(self, pos, flips):
+        if self.game_over():
+            raise Exception("Game is over, cannot make a move.")
+        self.grid[pos[0]][pos[1]] = self.current_turn
+        for flip in flips:
+            self.grid[flip[0]][flip[1]] = self.current_turn
+        self.current_turn = Square.BLACK if self.current_turn == Square.WHITE else Square.WHITE
