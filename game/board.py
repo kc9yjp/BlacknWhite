@@ -113,3 +113,41 @@ class Board:
                 if self.grid[r][c] == square_type:
                     count += 1
         return count
+
+    def open_moves(self):
+        results = {"color": self.current_turn, "moves": {}}
+
+        for sq in self.open_squares():
+            move_paths = [self.north_coords(sq), self.south_coords(sq), self.east_coords(sq), self.west_coords(sq),
+                          self.northeast_coords(sq), self.northwest_coords(sq), self.southeast_coords(sq),
+                          self.southwest_coords(sq)]
+            # foreach path, get the valid moves
+            move_list = []
+            for path in move_paths:
+                moves = self.get_moves(path)
+                if moves:
+                    move_list.append(moves)
+            if move_list:
+                results["moves"][sq] = move_list
+
+        return results
+    
+    def get_moves(self, square_list):
+        if not square_list or len(square_list) < 1:
+            return []
+        moves = []
+        anchor = False
+        for  pos in square_list:
+            sq = self.grid[pos[0]][pos[1]]
+
+            if sq == Square.OPEN:
+                break
+            elif sq == self.current_turn:
+                anchor = True
+                break
+            else:
+                moves.append(pos)
+
+        if anchor and moves:
+            return moves
+        return []
