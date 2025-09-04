@@ -187,3 +187,68 @@ class Board:
         move_flips = moves['moves'][move_square]    
         self.make_move(move_square, move_flips)
         return move_square, move_flips
+
+    def make_maxflips_move(self):
+        moves = self.open_moves()
+        if not moves["moves"]:
+            self.pass_turn()
+            return None, None
+        # Evaluate all possible moves and choose the best one
+        best_move = None
+        best_flips = []
+        for move_square, move_flips in moves["moves"].items():
+            if not best_move or len(move_flips) > len(best_flips):
+                best_move = move_square
+                best_flips = move_flips
+        self.make_move(best_move, best_flips)
+        return best_move, best_flips
+
+    def make_smart_move(self):
+        moves = self.open_moves()
+        if not moves["moves"]:
+            self.pass_turn()
+            return None, None
+        # Evaluate all possible moves and choose the best one
+        ranked_moves = []
+        
+        for move_square, move_flips in moves["moves"].items():
+            row, col = move_square
+            score = 0
+            # Prioritize corners
+            if (row, col) in [(0, 0), (0, self.size - 1), (self.size - 1, 0), (self.size - 1, self.size - 1)]:
+                score += 100 + len(move_flips)
+            # Avoid edges next to corners   
+            elif (row == 0 and col in [1, self.size - 2]) or (row == self.size - 1 and col in [1, self.size - 2]) or \
+                 (col == 0 and row in [1, self.size - 2]) or (col == self.size - 1 and row in [1, self.size - 2]):
+                score -= 50 + len(move_flips)
+            # Prioritize edges
+            elif row == 0 or row == self.size - 1 or col == 0 or col == self.size - 1:
+                score += 10 + len(move_flips)
+            # Avoid 1-square next to corners
+            elif (row in [1, self.size - 2] and col in [1, self.size - 2]) or \
+                 (col in [1, self.size - 2] and row in [1, self.size - 2]):
+                score -= 30 + len(move_flips)
+            # Avoid 1-squares from edges
+            elif row in [1, self.size - 2] or col in [1, self.size - 2]:
+                score -= 10 + len(move_flips)
+            else:
+                score += len(move_flips)
+
+            ranked_moves.append((score, move_square, move_flips))
+        # Sort moves by score
+        ranked_moves.sort(reverse=True, key=lambda x: x[0])
+        if ranked_moves:
+            best_move = ranked_moves[0][1]
+            best_flips = ranked_moves[0][2]
+        self.make_move(best_move, best_flips)
+        return best_move, best_flips
+
+    def winner(self):
+        white_count = self.count(Square.WHITE)
+        black_count = self.count(Square.BLACK)
+        if white_count > black_count:
+            return Square.WHITE
+        elif black_count > white_count:
+            return Square.BLACK
+        else:
+            return None  # Tie

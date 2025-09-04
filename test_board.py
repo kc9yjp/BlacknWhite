@@ -5,18 +5,32 @@ Test script to create a game board and print it.
 """
 
 from game import Board
+from game import Square
 
 if __name__ == "__main__":
     board = Board()
     print(board)
 
-    for s in board.open_squares():
-        print(s)
 
-    moves = board.open_moves()
-    print(f"\nAvailable moves for {moves['color'].name}:")
-    for square in moves['moves'].keys():
-        print(f"Square: {square}:")
-        for flips in moves['moves'][square]:
-            print(f"   Flips: {flips}")
+    while not board.game_over():
+        turn = board.open_moves()
+        print(f"\nAvailable moves for {turn['color'].name}:")
+        for square in turn['moves'].keys():
+            print(f"Square {square} flips {turn['moves'][square]} pieces")
 
+        move_square, move_flips = board.make_random_move()
+        print(f"Making move at {move_square} flipping {move_flips} pieces")
+
+        print(board)
+
+
+    white_count = board.count(Square.WHITE)
+    black_count = board.count(Square.BLACK)
+    open_count = board.open_count()
+    print(f"White: {white_count}, Black: {black_count}, Open: {open_count}")
+    if white_count == black_count:
+        print("The game is a tie!")
+    elif white_count > black_count:
+        print("White is the winner!")
+    else:
+        print("Black is the winner!")
