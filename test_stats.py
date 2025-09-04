@@ -23,12 +23,14 @@ def play_games(white_strategy, black_strategy, games):
 
     for i in range(games):
         board = Board()
+        if i % 2 == 0:
+            board.current_turn = Square.BLACK
+
         while not board.game_over():
             if board.current_turn == Square.WHITE:
                 move_square, move_flips = getattr(board, white_strategy)()
             else:
                 move_square, move_flips = getattr(board, black_strategy)()
-
         white_count = board.count(Square.WHITE)
         black_count = board.count(Square.BLACK)
         white_counts.append(white_count)
@@ -47,4 +49,3 @@ print(f"White Strategy \tBlack Strategy \tGames \tWhite Wins \tBlack Wins \tTies
 for strategy1 in strategies:
     for strategy2 in strategies:
         play_games(strategy1, strategy2, games)
-        play_games(strategy2, strategy1, games)
