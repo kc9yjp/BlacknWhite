@@ -3,7 +3,7 @@ board.py
 
 Defines the Board class for the game.
 """
-
+import random
 from .square import Square
 
 class Board:
@@ -170,7 +170,20 @@ class Board:
     def make_move(self, pos, flips):
         if self.game_over():
             raise Exception("Game is over, cannot make a move.")
+        if not flips:
+            raise ValueError("No pieces to flip for this move.")
         self.grid[pos[0]][pos[1]] = self.current_turn
         for flip in flips:
             self.grid[flip[0]][flip[1]] = self.current_turn
         self.current_turn = Square.BLACK if self.current_turn == Square.WHITE else Square.WHITE
+        self.consecutive_passes = 0
+
+    def make_random_move(self):
+        moves = self.open_moves()
+        if not moves["moves"]:
+            self.pass_turn()
+            return None, None
+        move_square = random.choice(list(moves['moves'].keys()))
+        move_flips = moves['moves'][move_square]    
+        self.make_move(move_square, move_flips)
+        return move_square, move_flips
