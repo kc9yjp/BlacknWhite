@@ -7,7 +7,7 @@ Summarizes the final counts for White and Black after all games.
 
 from game import Board, Square
 
-games = 1000
+games = 5000
 
 
 # Play make_random_move, make_maxflips_move, and max_smart_move against each other for 1000 games each
