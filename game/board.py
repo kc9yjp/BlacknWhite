@@ -1,7 +1,18 @@
-"""
-board.py
+"""Board implementation for the BlacknWhite game.
 
-Defines the Board class for the game.
+This module provides the :class:`Board` class which models the game
+state (an 8x8 grid of :class:`~game.square.Square` values), move
+generation, move application, and simple opponent strategies
+(`make_random_move`, `make_maxflips_move`, `make_smart_move`).
+
+Typical usage::
+
+    from game.board import Board
+    board = Board()
+    moves = board.open_moves()
+
+The implementation is intentionally small and self-contained to make it
+easy to test and extend.
 """
 import random
 from .square import Square

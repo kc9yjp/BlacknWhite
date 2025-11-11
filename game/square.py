@@ -1,7 +1,13 @@
-"""
-square.py
+"""Square enum used by the BlacknWhite game.
 
-Defines the Square enum representing the state of a square in the game.
+This module defines the :class:`Square` enum which represents the state
+of a single board cell. Values are:
+
+- ``OPEN``: the square is empty
+- ``BLACK``: occupied by a black piece
+- ``WHITE``: occupied by a white piece
+
+The enum is used by :mod:`game.board` to populate and query the grid.
 """
 
 from enum import Enum
