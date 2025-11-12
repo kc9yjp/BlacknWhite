@@ -1,6 +1,6 @@
 {
   "name": "BlacknWhite (Python 3.12)",
-  "image": "mcr.microsoft.com/devcontainers/python:0-3.12",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
   "workspaceFolder": "/workspace",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   "forwardPorts": [],
