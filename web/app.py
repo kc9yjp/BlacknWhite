@@ -52,5 +52,17 @@ def api_reset():
     session['board'] = Board()
     return jsonify({'success': True})
 
+@app.route('/api/ai_move', methods=['POST'])
+def api_ai_move():
+    board = get_board()
+    moves = board.open_moves()['moves']
+    if not moves:
+        return jsonify({'error': 'No valid moves'}), 400
+    # pick first available move (could be randomized later)
+    move, flips = next(iter(moves.items()))
+    board.make_move(move, flips)
+    session['board'] = board
+    return jsonify({'success': True})
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -21,40 +21,47 @@
         </svg>
 
         <div id="board">
-            <!-- 8x8 grid of square divs; JavaScript will update classes/content -->
-            
+            <!-- static 8×8 grid with data attributes and initial pieces -->
+            <!-- row 0 -->
+            <div class="square OPEN" data-row="0" data-col="0"></div><div class="square OPEN" data-row="0" data-col="1"></div><div class="square OPEN" data-row="0" data-col="2"></div><div class="square OPEN" data-row="0" data-col="3"></div>
+            <div class="square OPEN" data-row="0" data-col="4"></div><div class="square OPEN" data-row="0" data-col="5"></div><div class="square OPEN" data-row="0" data-col="6"></div><div class="square OPEN" data-row="0" data-col="7"></div>
             <!-- row 1 -->
-            <div class="square OPEN"><svg class="piece white"><use href="#disk"></use></svg></div>
-            <div class="square OPEN"><svg class="piece black"><use href="#disk"></use></svg></div>
-            <div class="square OPEN"></div><div class="square OPEN"></div>
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <div class="square OPEN" data-row="1" data-col="0"></div><div class="square OPEN" data-row="1" data-col="1"></div><div class="square OPEN" data-row="1" data-col="2"></div><div class="square OPEN" data-row="1" data-col="3"></div>
+            <div class="square OPEN" data-row="1" data-col="4"></div><div class="square OPEN" data-row="1" data-col="5"></div><div class="square OPEN" data-row="1" data-col="6"></div><div class="square OPEN" data-row="1" data-col="7"></div>
             <!-- row 2 -->
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
-            <!-- row 3 -->
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
-            <!-- row 4 -->
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <div class="square OPEN" data-row="2" data-col="0"></div><div class="square OPEN" data-row="2" data-col="1"></div><div class="square OPEN" data-row="2" data-col="2"></div><div class="square OPEN" data-row="2" data-col="3"></div>
+            <div class="square OPEN" data-row="2" data-col="4"></div><div class="square OPEN" data-row="2" data-col="5"></div><div class="square OPEN" data-row="2" data-col="6"></div><div class="square OPEN" data-row="2" data-col="7"></div>
+            <!-- row 3 (start) -->
+            <div class="square OPEN" data-row="3" data-col="0"></div><div class="square OPEN" data-row="3" data-col="1"></div><div class="square OPEN" data-row="3" data-col="2"></div>
+            <div class="square WHITE" data-row="3" data-col="3"><svg class="piece white"><use href="#disk"></use></svg></div>
+            <div class="square BLACK" data-row="3" data-col="4"><svg class="piece black"><use href="#disk"></use></svg></div>
+            <div class="square OPEN" data-row="3" data-col="5"></div><div class="square OPEN" data-row="3" data-col="6"></div><div class="square OPEN" data-row="3" data-col="7"></div>
+            <!-- row 4 (start) -->
+            <div class="square OPEN" data-row="4" data-col="0"></div><div class="square OPEN" data-row="4" data-col="1"></div><div class="square OPEN" data-row="4" data-col="2"></div>
+            <div class="square BLACK" data-row="4" data-col="3"><svg class="piece black"><use href="#disk"></use></svg></div>
+            <div class="square WHITE" data-row="4" data-col="4"><svg class="piece white"><use href="#disk"></use></svg></div>
+            <div class="square OPEN" data-row="4" data-col="5"></div><div class="square OPEN" data-row="4" data-col="6"></div><div class="square OPEN" data-row="4" data-col="7"></div>
             <!-- row 5 -->
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <div class="square OPEN" data-row="5" data-col="0"></div><div class="square OPEN" data-row="5" data-col="1"></div><div class="square OPEN" data-row="5" data-col="2"></div><div class="square OPEN" data-row="5" data-col="3"></div>
+            <div class="square OPEN" data-row="5" data-col="4"></div><div class="square OPEN" data-row="5" data-col="5"></div><div class="square OPEN" data-row="5" data-col="6"></div><div class="square OPEN" data-row="5" data-col="7"></div>
             <!-- row 6 -->
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <div class="square OPEN" data-row="6" data-col="0"></div><div class="square OPEN" data-row="6" data-col="1"></div><div class="square OPEN" data-row="6" data-col="2"></div><div class="square OPEN" data-row="6" data-col="3"></div>
+            <div class="square OPEN" data-row="6" data-col="4"></div><div class="square OPEN" data-row="6" data-col="5"></div><div class="square OPEN" data-row="6" data-col="6"></div><div class="square OPEN" data-row="6" data-col="7"></div>
             <!-- row 7 -->
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
-            <!-- row 8 -->
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
-            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <div class="square OPEN" data-row="7" data-col="0"></div><div class="square OPEN" data-row="7" data-col="1"></div><div class="square OPEN" data-row="7" data-col="2"></div><div class="square OPEN" data-row="7" data-col="3"></div>
+            <div class="square OPEN" data-row="7" data-col="4"></div><div class="square OPEN" data-row="7" data-col="5"></div><div class="square OPEN" data-row="7" data-col="6"></div><div class="square OPEN" data-row="7" data-col="7"></div>
         </div>
         <div id="info">
-            <h1>BlacknWhite</h1>
-            <button id="passBtn">Pass</button>
-            <button id="resetBtn">Reset</button>
-        </div>
+            <h1>Black and White</h1>
+            <div id="start-area">
+                <p id="start-msg">Select black or white to begin play.</p>
+                <button id="startBlackBtn">Start as Black</button>
+                <button id="startWhiteBtn">Start as White</button>
+            </div>
+            <div class="controls" style="display:none;">
+                <button id="passBtn">Pass</button>
+                <button id="resetBtn">Reset</button>
+            </div>            <p id="status"></p>        </div>
     </div>
     <script src="/static/game.js"></script>
 </body>

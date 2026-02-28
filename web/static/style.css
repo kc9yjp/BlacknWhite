@@ -80,3 +80,6 @@ body { font-family: sans-serif; background: #f8f8f8; }
 .square.OPEN { background: green; color: #bbb; }
 #info { margin: 10px 0; }
 button { margin-right: 10px; }
+
+#start-area p { margin-bottom: 8px; }
+#info .controls { display: none; /* hidden until game start */ }
