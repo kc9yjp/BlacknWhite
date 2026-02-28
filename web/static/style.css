@@ -1,8 +1,82 @@
 body { font-family: sans-serif; background: #f8f8f8; }
-#board { display: grid; grid-template-columns: repeat(8, 40px); grid-gap: 2px; margin: 20px 0; }
-.square { width: 40px; height: 40px; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; }
+#board {
+    display: grid;
+    /* square responsive container based on viewport's smaller dimension */
+    width: 100vmin;
+    height: 100vmin;
+    max-width: 100%;
+    max-height: 100%;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    /* no gap; borders handle divisions */
+    grid-gap: 0;
+    margin: -8px auto;
+    background: green;
+    border: 4px solid black; /* outer border */
+    box-sizing: border-box;
+}
+#board .square {
+    /* fill each grid cell fully and show inner border */
+    width: 100%;
+    height: 100%;
+    border: 2px solid black; /* inner squares */
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden; /* ensure pieces don't overflow */
+}
+
+#board .square svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.piece.white { color: white; }
+.piece.black { color: black; }
+
+
+#game {
+    /* ensure game area fills available space and centers the board */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* allow content to size naturally to prevent scrollbars */
+    height: auto;
+}
+
+/* orientation-specific layout for info panel */
+@media (orientation: portrait) {
+    #game {
+        flex-direction: column;
+    }
+    #info {
+        margin-top: 10px;
+        order: 2; /* place after board */
+    }
+}
+
+@media (orientation: landscape) {
+    #game {
+        flex-direction: row;
+    }
+    #info {
+        margin-left: 10px;
+        order: 2; /* board first, info second */
+        align-self: center;
+    }
+}
+
+.square {
+    /* flex layout for contents; size controlled by parent cell */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+}
 .square.B { background: #222; color: #fff; }
-.square.W { background: #fff; color: #222; border: 1px solid #222; }
-.square.OPEN { background: #ddd; color: #bbb; }
+.square.W { background: #fff; color: #222; }
+.square.OPEN { background: green; color: #bbb; }
 #info { margin: 10px 0; }
 button { margin-right: 10px; }

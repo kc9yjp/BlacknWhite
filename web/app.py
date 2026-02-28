@@ -20,13 +20,13 @@ def index():
 def api_board():
     board = get_board()
     grid = [[sq.name for sq in row] for row in board.grid]
-    return jsonify({
+    info = {
         'grid': grid,
         'current_turn': board.current_turn.name,
-        'game_over': board.game_over(),
         'white_count': board.count(Square.WHITE),
         'black_count': board.count(Square.BLACK)
-    })
+    }
+    return jsonify(info)
 
 @app.route('/api/move', methods=['POST'])
 def api_move():

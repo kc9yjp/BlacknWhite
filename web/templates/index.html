@@ -6,12 +6,52 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>BlacknWhite</h1>
+    
     <div id="game">
-        <div id="board"></div>
-        <div id="info"></div>
-        <button id="passBtn">Pass</button>
-        <button id="resetBtn">Reset</button>
+        <!-- hidden SVG definitions for disk piece -->
+        <svg width="0" height="0" style="position:absolute; visibility:hidden;">
+            <defs>
+                <symbol id="disk" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="currentColor" />
+                </symbol>
+            </defs>
+        </svg>
+
+        <div id="board">
+            <!-- 8x8 grid of square divs; JavaScript will update classes/content -->
+            
+            <!-- row 1 -->
+            <div class="square OPEN"><svg class="piece white"><use href="#disk"></use></svg></div>
+            <div class="square OPEN"><svg class="piece black"><use href="#disk"></use></svg></div>
+            <div class="square OPEN"></div><div class="square OPEN"></div>
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <!-- row 2 -->
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <!-- row 3 -->
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <!-- row 4 -->
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <!-- row 5 -->
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <!-- row 6 -->
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <!-- row 7 -->
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <!-- row 8 -->
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+            <div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div><div class="square OPEN"></div>
+        </div>
+        <div id="info">
+            <h1>BlacknWhite</h1>
+            <button id="passBtn">Pass</button>
+            <button id="resetBtn">Reset</button>
+        </div>
     </div>
     <script src="/static/game.js"></script>
 </body>
