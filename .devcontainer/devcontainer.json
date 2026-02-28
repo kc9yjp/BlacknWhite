@@ -1,10 +1,13 @@
 {
   "name": "BlacknWhite (Python 3.12)",
-  "image": "mcr.microsoft.com/devcontainers/python:0-3.12",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
   "workspaceFolder": "/workspace",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   "forwardPorts": [],
   "postCreateCommand": "python -m pip install --upgrade pip && if [ -f requirements.txt ]; then pip install -r requirements.txt; fi",
+  "containerEnv": {
+    "PYTHONPATH": "${containerWorkspaceFolder}"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
@@ -14,6 +17,9 @@
       ],
       "settings": {
         "python.analysis.typeCheckingMode": "basic",
+        "python.analysis.extraPaths": [
+          "./game"
+        ],
         "python.testing.unittestEnabled": true,
         "python.testing.pytestEnabled": false
       }
