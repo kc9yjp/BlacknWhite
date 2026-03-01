@@ -14,17 +14,41 @@ def get_board():
 
 @app.route('/')
 def index():
+    session['strategy'] = 'first'  # default strategy
     return render_template('index.html')
 
 @app.route('/api/board', methods=['GET'])
 def api_board():
     board = get_board()
     grid = [[sq.name for sq in row] for row in board.grid]
+    
+    # Get available moves for the current player
+    available_moves = []
+    game_over = board.game_over()
+    if not game_over:
+        try:
+            moves = board.open_moves()
+            available_moves = list(moves['moves'].keys())
+        except:
+            pass
+    
+    # Get winner info
+    winner = None
+    if game_over:
+        winner_sq = board.winner()
+        if winner_sq:
+            winner = winner_sq.name
+        else:
+            winner = 'TIE'
+    
     info = {
         'grid': grid,
         'current_turn': board.current_turn.name,
         'white_count': board.count(Square.WHITE),
-        'black_count': board.count(Square.BLACK)
+        'black_count': board.count(Square.BLACK),
+        'available_moves': available_moves,
+        'game_over': game_over,
+        'winner': winner
     }
     return jsonify(info)
 
@@ -49,18 +73,31 @@ def api_pass():
 
 @app.route('/api/reset', methods=['POST'])
 def api_reset():
+    data = request.json or {}
+    strategy = data.get('strategy', 'first')
     session['board'] = Board()
+    session['strategy'] = strategy
     return jsonify({'success': True})
 
 @app.route('/api/ai_move', methods=['POST'])
 def api_ai_move():
     board = get_board()
-    moves = board.open_moves()['moves']
-    if not moves:
-        return jsonify({'error': 'No valid moves'}), 400
-    # pick first available move (could be randomized later)
-    move, flips = next(iter(moves.items()))
-    board.make_move(move, flips)
+    strategy = session.get('strategy', 'first')
+    
+    if strategy == 'random':
+        board.make_random_move()
+    elif strategy == 'maxflips':
+        board.make_maxflips_move()
+    elif strategy == 'smart':
+        board.make_smart_move()
+    else:  # 'first' or default
+        moves = board.open_moves()['moves']
+        if not moves:
+            board.pass_turn()
+        else:
+            move, flips = next(iter(moves.items()))
+            board.make_move(move, flips)
+    
     session['board'] = board
     return jsonify({'success': True})
 

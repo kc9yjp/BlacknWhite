@@ -73,10 +73,20 @@ body { font-family: sans-serif; background: #f8f8f8; }
     align-items: center;
     justify-content: center;
     font-size: 24px;
+    cursor: default;
+}
+.square.available {
     cursor: pointer;
 }
-.square.B { background: #222; color: #fff; }
-.square.W { background: #fff; color: #222; }
+.square.available:hover {
+    opacity: 0.85;
+}
+.square.BLACK,
+.square.WHITE {
+    cursor: default;
+}
+.square.BLACK { background: #222; color: #fff; }
+.square.WHITE { background: #fff; color: #222; }
 .square.OPEN { background: green; color: #bbb; }
 #info { margin: 10px 0; }
 button { margin-right: 10px; }
