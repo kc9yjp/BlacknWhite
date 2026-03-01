@@ -12,6 +12,13 @@ if __name__ == "__main__":
     print(str(board).replace('O', ' '))
 
 
+    # serialization round-trip check
+    json_str = board.to_json()
+    restored = Board.from_json(json_str)
+    assert restored.grid == board.grid
+    assert restored.current_turn == board.current_turn
+    print("Serialization round-trip successful")
+
     while not board.game_over():
         turn = board.open_moves()
         print(f"\nAvailable moves for {turn['color'].name}:")

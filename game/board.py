@@ -16,6 +16,7 @@ easy to test and extend.
 """
 import random
 from .square import Square
+import json
 
 class Board:
     """
@@ -265,3 +266,33 @@ class Board:
             return Square.BLACK
         else:
             return None  # Tie
+    # serialization helpers
+    def to_dict(self):
+        """Return a JSON-serializable dictionary representing the board state."""
+        return {
+            "size": self.size,
+            "grid": [[sq.name for sq in row] for row in self.grid],
+            "current_turn": self.current_turn.name,
+            "pass_count": self.pass_count,
+            "consecutive_passes": self.consecutive_passes,
+        }
+
+    def to_json(self):
+        """Serialize the board to a JSON string."""
+        return json.dumps(self.to_dict())
+
+    @classmethod
+    def from_dict(cls, data):
+        """Construct a Board instance from a dict produced by :meth:`to_dict`."""
+        b = cls()
+        b.size = data.get("size", 8)
+        b.grid = [[Square[sq] for sq in row] for row in data["grid"]]
+        b.current_turn = Square[data["current_turn"]]
+        b.pass_count = data.get("pass_count", 0)
+        b.consecutive_passes = data.get("consecutive_passes", 0)
+        return b
+
+    @classmethod
+    def from_json(cls, json_str):
+        """Deserialize a JSON string back into a Board."""
+        return cls.from_dict(json.loads(json_str))
