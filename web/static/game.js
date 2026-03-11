@@ -1,4 +1,5 @@
 let playerColor = null; // 'BLACK' or 'WHITE' once user selects
+let aiStrategy = 'maxflips'; // 'random', 'maxflips', or 'smart'
 
 async function fetchBoard() {
     const res = await fetch('/api/board');
@@ -70,7 +71,11 @@ function showControls(show) {
 }
 
 async function aiMove() {
-    await fetch('/api/ai_move', { method: 'POST' });
+    await fetch('/api/ai_move', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ strategy: aiStrategy })
+    });
     await update();
 }
 
@@ -89,12 +94,14 @@ const startBlackBtn = document.getElementById('startBlackBtn');
 const startWhiteBtn = document.getElementById('startWhiteBtn');
 startBlackBtn.onclick = () => {
     playerColor = 'BLACK';
+    aiStrategy = document.getElementById('strategySelect').value;
     document.getElementById('start-msg').textContent = 'You are playing as Black.';
     showControls(true);
     update();
 };
 startWhiteBtn.onclick = () => {
     playerColor = 'WHITE';
+    aiStrategy = document.getElementById('strategySelect').value;
     document.getElementById('start-msg').textContent = 'You are playing as White.';
     showControls(true);
     update();

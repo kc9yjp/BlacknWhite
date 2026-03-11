@@ -55,12 +55,14 @@ def api_reset():
 @app.route('/api/ai_move', methods=['POST'])
 def api_ai_move():
     board = get_board()
-    moves = board.open_moves()['moves']
-    if not moves:
-        return jsonify({'error': 'No valid moves'}), 400
-    # pick first available move (could be randomized later)
-    move, flips = next(iter(moves.items()))
-    board.make_move(move, flips)
+    data = request.json or {}
+    strategy = data.get('strategy', 'maxflips')
+    if strategy == 'random':
+        board.make_random_move()
+    elif strategy == 'smart':
+        board.make_smart_move()
+    else:
+        board.make_maxflips_move()
     session['board'] = board
     return jsonify({'success': True})
 

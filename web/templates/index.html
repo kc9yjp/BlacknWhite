@@ -55,10 +55,16 @@
             <h1>Black and White</h1>
             <div id="start-area">
                 <p id="start-msg">Select black or white to begin play.</p>
+                <label for="strategySelect">Opponent strategy:</label>
+                <select id="strategySelect">
+                    <option value="random">Random</option>
+                    <option value="maxflips" selected>Max Flips</option>
+                    <option value="smart">Smart</option>
+                </select>
                 <button id="startBlackBtn">Start as Black</button>
                 <button id="startWhiteBtn">Start as White</button>
             </div>
-            <div class="controls" style="display:none;">
+            <div id="game-controls" class="controls" style="display:none;">
                 <button id="passBtn">Pass</button>
                 <button id="resetBtn">Reset</button>
             </div>            <p id="status"></p>        </div>
