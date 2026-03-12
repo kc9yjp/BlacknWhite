@@ -17,7 +17,7 @@ class GameState:
 
     def to_json(self):
         return json.dumps({
-            'board': self.board.to_json(),
+            'board': self.board.to_dict(),
             'strategy': self.strategy,
             'color': self.color
         })
@@ -26,7 +26,7 @@ class GameState:
     def from_json(json_str):
         data = json.loads(json_str)
         state = GameState()
-        state.board = Board.from_json(data['board'])
+        state.board = Board.from_dict(data['board'])
         state.strategy = data['strategy']
         state.color = data['color']
         return state
@@ -42,9 +42,9 @@ SESSION_KEY = 'game_state'
 def api_board():
     ''' Return current board state as JSON '''
     if not session.get(SESSION_KEY):
-        state = new GameState()
+        state = GameState()
     else:
-        state = session[SESSION_KEY]
+        state = GameState.from_json(session[SESSION_KEY])
 
     return state.to_json()
 
@@ -61,7 +61,7 @@ def api_start():
     color = data.get('color', 'black')
 
     state = GameState(strategy=strategy, color=color)
-    session[SESSION_KEY] = state
+    session[SESSION_KEY] = state.to_json()
     return state.to_json()
 
 @app.route('/api/pass', methods=['POST'])
@@ -70,13 +70,13 @@ def api_pass():
         # if no game state, throw error
         return jsonify({'error': 'No game in progress'}), 400
     else:
-        state = session[SESSION_KEY]
-    
-    if state.color != state.board.current_player:
+        state = GameState.from_json(session[SESSION_KEY])
+
+    if state.color != state.board.current_turn.name:
         return jsonify({'error': 'Not your turn'}), 400
 
     state.board.pass_turn()
-    session[SESSION_KEY] = state
+    session[SESSION_KEY] = state.to_json()
     return state.to_json()
 
 @app.route('/api/move', methods=['POST'])
@@ -86,22 +86,26 @@ def api_move():
         # if no game state, throw error
         return jsonify({'error': 'No game in progress'}), 400
     else:
-        state = session[SESSION_KEY]
-    
-    if state.color != state.board.current_player:
+        state = GameState.from_json(session[SESSION_KEY])
+
+    if state.color != state.board.current_turn.name:
         return jsonify({'error': 'Not your turn'}), 400
 
-    row = data.get('row')   
+    row = data.get('row')
     col = data.get('col')
     if row is None or col is None:
         return jsonify({'error': 'Missing row or col'}), 400
 
+    moves = state.board.open_moves()['moves']
+    pos = (row, col)
+    if pos not in moves:
+        return jsonify({'error': 'Invalid move'}), 400
     try:
-        state.board.make_move((row, col))
+        state.board.make_move(pos, moves[pos])
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
 
-    session[SESSION_KEY] = state
+    session[SESSION_KEY] = state.to_json()
     return state.to_json()
 
 @app.route('/api/opponentmove', methods=['POST'])
@@ -111,9 +115,9 @@ def api_opponent_move():
         # if no game state, throw error
         return jsonify({'error': 'No game in progress'}), 400
     else:
-        state = session[SESSION_KEY]
-    
-    if state.color == state.board.current_player:
+        state = GameState.from_json(session[SESSION_KEY])
+
+    if state.color == state.board.current_turn.name:
         return jsonify({'error': 'Not opponent\'s turn'}), 400
 
     # random sleep up to 2 seconds to simulate thinking time
@@ -127,9 +131,14 @@ def api_opponent_move():
     elif state.strategy == 'smart':
         state.board.make_smart_move()
     else:  # 'first' or default
-        state.board.make_first_move()
+        moves = state.board.open_moves()['moves']
+        if moves:
+            pos, flips = next(iter(moves.items()))
+            state.board.make_move(pos, flips)
+        else:
+            state.board.pass_turn()
     
-    session[SESSION_KEY] = state
+    session[SESSION_KEY] = state.to_json()
     return state.to_json()
 
 if __name__ == '__main__':
