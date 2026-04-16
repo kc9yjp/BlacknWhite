@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xdg-open http://127.0.0.1:5000)",
+      "Bash(venv/bin/python:*)",
+      "Bash(PYTHONPATH=/home/ejwettstein/Work/BlacknWhite venv/bin/python:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)"
+    ]
+  }
+}
