@@ -3,7 +3,6 @@ from game.board import Board
 from game.square import Square
 import os
 import json
-import time, random
 
 
 app = Flask(__name__)
@@ -192,9 +191,6 @@ def api_opponent_move():
 
     if state.board.game_over():
         return jsonify({"error": "Game is over"}), 400
-
-    # random sleep up to 2 seconds to simulate thinking time
-    time.sleep(random.uniform(0, 2))
 
     if state.strategy == "random":
         state.board.make_random_move()

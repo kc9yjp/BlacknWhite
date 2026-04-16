@@ -145,7 +145,7 @@ async function update() {
     // if game running and it's opponent's turn, trigger AI move
     if (playerColor && !isGameOver(data.board) && data.board.current_turn !== playerColor) {
         // small delay to let UI update
-        setTimeout(aiMove, 300);
+        setTimeout(aiMove, 1000);
     }
 }
 
