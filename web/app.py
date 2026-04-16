@@ -7,6 +7,8 @@ import json
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_HTTPONLY"] = True
 
 
 class GameState:
@@ -162,8 +164,10 @@ def api_move():
 
     row = data.get("row")
     col = data.get("col")
-    if row is None or col is None:
+    if not isinstance(row, int) or not isinstance(col, int):
         return jsonify({"error": "Missing row or col"}), 400
+    if not (0 <= row < 8 and 0 <= col < 8):
+        return jsonify({"error": "Row and col must be between 0 and 7"}), 400
 
     if state.board.game_over():
         return jsonify({"error": "Game is over"}), 400
@@ -220,4 +224,4 @@ def api_opponent_move():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=os.environ.get("FLASK_DEBUG", "0") == "1")

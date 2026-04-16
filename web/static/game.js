@@ -2,6 +2,19 @@
 /** The human player's color ('BLACK' or 'WHITE'), or null before a game is started. */
 let playerColor = null;
 
+const VALID_SQUARE_VALUES = new Set(['OPEN', 'BLACK', 'WHITE']);
+
+/**
+ * Display an error message in the status bar, auto-clearing after 3 seconds.
+ * @param {string} msg - The error text to show.
+ */
+function showError(msg) {
+    const el = document.getElementById('status');
+    el.textContent = 'Error: ' + msg;
+    el.classList.add('error');
+    setTimeout(() => el.classList.remove('error'), 3000);
+}
+
 /**
  * Fetch the current game state from the server.
  * @returns {Promise<Object>} Parsed JSON with shape { board, strategy, color }.
@@ -50,7 +63,7 @@ function renderBoard(data) {
     boardDiv.querySelectorAll('.square').forEach(cell => {
         const r = parseInt(cell.dataset.row, 10);
         const c = parseInt(cell.dataset.col, 10);
-        const val = board.grid[r][c];
+        const val = VALID_SQUARE_VALUES.has(board.grid[r][c]) ? board.grid[r][c] : 'OPEN';
         // reset classes
         cell.className = 'square ' + val;
         cell.innerHTML = '';
@@ -83,38 +96,51 @@ function renderBoard(data) {
  */
 async function makeMove(r, c) {
     if (!playerColor) {
-        alert('Please start a game first.');
+        showError('Please start a game first.');
         return;
     }
-    // only allow clicking when it's player's turn
-    const data = await fetchState();
-    if (data.board.current_turn !== playerColor) {
-        return; // ignore click
-    }
-    const res = await fetch('/api/move', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ row: r, col: c })
-    });
-    if (res.ok) {
-        await update();
-    } else {
-        alert('Invalid move!');
+    try {
+        // only allow clicking when it's player's turn
+        const data = await fetchState();
+        if (data.board.current_turn !== playerColor) {
+            return; // ignore click
+        }
+        const res = await fetch('/api/move', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ row: r, col: c })
+        });
+        if (res.ok) {
+            await update();
+        } else {
+            const body = await res.json().catch(() => ({}));
+            showError(body.error || 'Invalid move');
+        }
+    } catch (e) {
+        showError('Network error');
     }
 }
 
 /** Pass the player's turn and refresh the board. */
 document.getElementById('passBtn').onclick = async () => {
-    await fetch('/api/pass', { method: 'POST' });
-    await update();
+    try {
+        await fetch('/api/pass', { method: 'POST' });
+        await update();
+    } catch (e) {
+        showError('Network error');
+    }
 };
 
 /** Reset the game, clear player state, and return to the start screen. */
 document.getElementById('resetBtn').onclick = async () => {
-    playerColor = null;
-    await fetch('/api/reset', { method: 'POST' });
-    showControls(false);
-    await update();
+    try {
+        playerColor = null;
+        await fetch('/api/reset', { method: 'POST' });
+        showControls(false);
+        await update();
+    } catch (e) {
+        showError('Network error');
+    }
 };
 
 /**
@@ -152,30 +178,38 @@ async function update() {
 // start button logic
 /** Start a new game as Black with the selected strategy. */
 document.getElementById('startBlackBtn').onclick = async () => {
-    const strategy = document.getElementById('strategySelect').value;
-    playerColor = 'BLACK';
-    await fetch('/api/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ color: 'BLACK', strategy })
-    });
-    document.getElementById('start-msg').textContent = 'You are playing as Black.';
-    showControls(true);
-    await update();
+    try {
+        const strategy = document.getElementById('strategySelect').value;
+        playerColor = 'BLACK';
+        await fetch('/api/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ color: 'BLACK', strategy })
+        });
+        document.getElementById('start-msg').textContent = 'You are playing as Black.';
+        showControls(true);
+        await update();
+    } catch (e) {
+        showError('Network error');
+    }
 };
 
 /** Start a new game as White with the selected strategy. */
 document.getElementById('startWhiteBtn').onclick = async () => {
-    const strategy = document.getElementById('strategySelect').value;
-    playerColor = 'WHITE';
-    await fetch('/api/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ color: 'WHITE', strategy })
-    });
-    document.getElementById('start-msg').textContent = 'You are playing as White.';
-    showControls(true);
-    await update();
+    try {
+        const strategy = document.getElementById('strategySelect').value;
+        playerColor = 'WHITE';
+        await fetch('/api/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ color: 'WHITE', strategy })
+        });
+        document.getElementById('start-msg').textContent = 'You are playing as White.';
+        showControls(true);
+        await update();
+    } catch (e) {
+        showError('Network error');
+    }
 };
 
 // run initial update so board shows on page load
