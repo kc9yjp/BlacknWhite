@@ -3,7 +3,7 @@
   "image": "mcr.microsoft.com/devcontainers/python:3.12",
   "workspaceFolder": "/workspace",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-  "forwardPorts": [],
+  "forwardPorts": [5000],
   "postCreateCommand": "python -m pip install --upgrade pip && if [ -f requirements.txt ]; then pip install -r requirements.txt; fi",
   "containerEnv": {
     "PYTHONPATH": "${containerWorkspaceFolder}"
@@ -13,7 +13,8 @@
       "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "ms-toolsai.jupyter"
+        "ms-toolsai.jupyter",
+        "ms-python.debugpy"
       ],
       "settings": {
         "python.analysis.typeCheckingMode": "basic",

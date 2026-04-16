@@ -83,3 +83,4 @@ button { margin-right: 10px; }
 
 #start-area p { margin-bottom: 8px; }
 #info .controls { display: none; /* hidden until game start */ }
+#status.error { color: red; font-weight: bold; }
