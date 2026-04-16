@@ -106,6 +106,14 @@ def api_start():
     strategy = data.get("strategy", "first")
     color = data.get("color", "BLACK").upper()
 
+    allowed_strategies = {"first", "random", "maxflips", "smart"}
+    allowed_colors = {"BLACK", "WHITE"}
+
+    if strategy not in allowed_strategies:
+        strategy = "first"
+    if color not in allowed_colors:
+        color = "BLACK"
+
     state = GameState(strategy=strategy, color=color)
     session[SESSION_KEY] = state.to_json()
     return state.to_json()
