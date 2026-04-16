@@ -97,7 +97,7 @@ async function makeMove(r, c) {
         body: JSON.stringify({ row: r, col: c })
     });
     if (res.ok) {
-        renderBoard(await res.json());
+        await update();
     } else {
         alert('Invalid move!');
     }
