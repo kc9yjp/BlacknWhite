@@ -173,8 +173,9 @@ def api_move():
         return jsonify({"error": "Invalid move"}), 400
     try:
         state.board.make_move(pos, moves[pos])
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+    except ValueError:
+        app.logger.exception("Failed to apply player move")
+        return jsonify({"error": "Invalid move"}), 400
 
     session[SESSION_KEY] = state.to_json()
     return state.to_json()
