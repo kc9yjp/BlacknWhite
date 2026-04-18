@@ -15,7 +15,8 @@
         "ms-python.vscode-pylance",
         "ms-toolsai.jupyter",
         "ms-python.debugpy",
-        "anthropic.claude-code"
+        "anthropic.claude-code",
+        "GitHub.vscode-pull-request-github"
       ],
       "settings": {
         "python.analysis.typeCheckingMode": "basic",
