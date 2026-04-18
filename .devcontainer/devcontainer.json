@@ -4,7 +4,7 @@
   "workspaceFolder": "/workspace",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   "forwardPorts": [5000],
-  "postCreateCommand": "python -m pip install --upgrade pip && if [ -f requirements.txt ]; then pip install -r requirements.txt; fi",
+  "postCreateCommand": "python -m pip install --upgrade pip && if [ -f requirements.txt ]; then pip install -r requirements.txt; fi && curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt-get install -y nodejs && npm install -g @anthropic-ai/claude-code",
   "containerEnv": {
     "PYTHONPATH": "${containerWorkspaceFolder}"
   },
@@ -14,12 +14,14 @@
         "ms-python.python",
         "ms-python.vscode-pylance",
         "ms-toolsai.jupyter",
-        "ms-python.debugpy"
+        "ms-python.debugpy",
+        "anthropic.claude-code"
       ],
       "settings": {
         "python.analysis.typeCheckingMode": "basic",
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
         "python.analysis.extraPaths": [
-          "./game"
+          "."
         ],
         "python.testing.unittestEnabled": true,
         "python.testing.pytestEnabled": false
