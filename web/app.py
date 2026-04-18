@@ -36,12 +36,26 @@ class GameState:
 
         The board is embedded as a plain dict (not a nested JSON string) so the
         client can read all fields without a second ``JSON.parse`` call.
+        Includes ``valid_moves`` (list of ``[row, col]`` pairs) when it is the
+        human player's turn, so the client can highlight legal squares.
         """
+        valid_moves = []
+        if (
+            self.color
+            and not self.board.game_over()
+            and self.board.current_turn.name == self.color
+        ):
+            try:
+                moves = self.board.open_moves().get("moves", {})
+                valid_moves = [list(pos) for pos in moves.keys()]
+            except Exception:
+                pass
         return json.dumps(
             {
                 "board": self.board.to_dict(),
                 "strategy": self.strategy,
                 "color": self.color,
+                "valid_moves": valid_moves,
             }
         )
 

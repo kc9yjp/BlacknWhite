@@ -1,86 +1,110 @@
-body { font-family: sans-serif; background: #f8f8f8; }
-#board {
-    display: grid;
-    /* square responsive container based on viewport's smaller dimension */
-    width: 100vmin;
-    height: 100vmin;
-    max-width: 100%;
-    max-height: 100%;
-    grid-template-columns: repeat(8, 1fr);
-    grid-template-rows: repeat(8, 1fr);
-    /* no gap; borders handle divisions */
-    grid-gap: 0;
-    margin: -8px auto;
-    background: green;
-    border: 4px solid black; /* outer border */
+body {
+    font-family: sans-serif;
+    background: #f8f8f8;
+    margin: 0;
+    padding: 8px;
     box-sizing: border-box;
 }
+
+#board {
+    display: grid;
+    /* responsive square: fills small screens, capped at 560px on large ones */
+    width: min(90vmin, 560px);
+    height: min(90vmin, 560px);
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    grid-gap: 0;
+    background: #1a7a1a;
+    border: 4px solid #333;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
 #board .square {
-    /* fill each grid cell fully and show inner border */
     width: 100%;
     height: 100%;
-    border: 2px solid black; /* inner squares */
+    border: 1px solid rgba(0, 0, 0, 0.3);
     box-sizing: border-box;
     position: relative;
-    overflow: hidden; /* ensure pieces don't overflow */
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
 }
 
 #board .square svg {
-    width: 100%;
-    height: 100%;
+    width: 85%;
+    height: 85%;
     display: block;
 }
 
-.piece.white { color: white; }
-.piece.black { color: black; }
+.piece.white { color: #f0f0f0; }
+.piece.black { color: #111; }
 
+.square.OPEN { background: #1a7a1a; }
+.square.BLACK { background: #1a7a1a; }
+.square.WHITE { background: #1a7a1a; }
+
+/* valid move hint: small dot in the center of the square */
+.square.VALID {
+    background: #1a7a1a;
+    cursor: pointer;
+}
+.square.VALID::after {
+    content: '';
+    position: absolute;
+    width: 28%;
+    height: 28%;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+}
+.square.VALID:hover {
+    background: #228822;
+}
+.square.VALID:hover::after {
+    background: rgba(0, 0, 0, 0.4);
+}
 
 #game {
-    /* ensure game area fills available space and centers the board */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    /* allow content to size naturally to prevent scrollbars */
-    height: auto;
+    min-height: calc(100vh - 16px);
 }
 
-/* orientation-specific layout for info panel */
 @media (orientation: portrait) {
-    #game {
-        flex-direction: column;
-    }
-    #info {
-        margin-top: 10px;
-        order: 2; /* place after board */
-    }
+    #game { flex-direction: column; }
+    #info { margin-top: 16px; order: 2; }
 }
 
 @media (orientation: landscape) {
-    #game {
-        flex-direction: row;
-    }
-    #info {
-        margin-left: 10px;
-        order: 2; /* board first, info second */
-        align-self: center;
-    }
+    #game { flex-direction: row; align-items: flex-start; padding-top: 16px; }
+    #info { margin-left: 20px; order: 2; align-self: flex-start; max-width: 240px; }
 }
 
-.square {
-    /* flex layout for contents; size controlled by parent cell */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
+#info h1 { margin: 0 0 12px; font-size: 1.4rem; }
+
+#start-area label { display: block; margin-bottom: 4px; font-size: 0.9rem; }
+#start-area select { margin-bottom: 10px; }
+#start-area p { margin: 0 0 10px; }
+
+button {
+    margin: 0 8px 8px 0;
+    padding: 6px 14px;
     cursor: pointer;
+    border: 1px solid #888;
+    border-radius: 4px;
+    background: #e8e8e8;
+    font-size: 0.9rem;
 }
-.square.B { background: #222; color: #fff; }
-.square.W { background: #fff; color: #222; }
-.square.OPEN { background: green; color: #bbb; }
-#info { margin: 10px 0; }
-button { margin-right: 10px; }
+button:hover { background: #d0d0d0; }
 
-#start-area p { margin-bottom: 8px; }
-#info .controls { display: none; /* hidden until game start */ }
+#status {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    min-height: 1.2em;
+}
 #status.error { color: red; font-weight: bold; }

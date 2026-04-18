@@ -2,6 +2,12 @@
 /** The human player's color ('BLACK' or 'WHITE'), or null before a game is started. */
 let playerColor = null;
 
+/** Last-fetched game state, used to avoid redundant server round-trips. */
+let currentState = null;
+
+/** Prevents overlapping API requests from concurrent clicks or AI calls. */
+let isRequestPending = false;
+
 const VALID_SQUARE_VALUES = new Set(['OPEN', 'BLACK', 'WHITE']);
 
 /**
@@ -15,9 +21,15 @@ function showError(msg) {
     setTimeout(() => el.classList.remove('error'), 3000);
 }
 
+function setStatus(msg) {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.classList.remove('error');
+}
+
 /**
  * Fetch the current game state from the server.
- * @returns {Promise<Object>} Parsed JSON with shape { board, strategy, color }.
+ * @returns {Promise<Object>} Parsed JSON with shape { board, strategy, color, valid_moves }.
  */
 async function fetchState() {
     const res = await fetch('/api/board');
@@ -42,7 +54,6 @@ function countPieces(grid) {
 
 /**
  * Determine whether the game has ended.
- * The game is over when two consecutive passes have occurred or no open squares remain.
  * @param {Object} board - The board object from the server response.
  * @returns {boolean}
  */
@@ -53,19 +64,19 @@ function isGameOver(board) {
 
 /**
  * Re-render all board squares and update the status line from a server response.
- * Updates CSS classes and piece SVGs in place without rebuilding the DOM.
+ * Marks valid move squares with the VALID CSS class so players can see their options.
  * @param {Object} data - Full game state as returned by any API endpoint.
  */
 function renderBoard(data) {
     const board = data.board;
+    const validSet = new Set((data.valid_moves || []).map(([r, c]) => `${r},${c}`));
     const boardDiv = document.getElementById('board');
-    // update each pre-defined square rather than recreating the DOM
     boardDiv.querySelectorAll('.square').forEach(cell => {
         const r = parseInt(cell.dataset.row, 10);
         const c = parseInt(cell.dataset.col, 10);
         const val = VALID_SQUARE_VALUES.has(board.grid[r][c]) ? board.grid[r][c] : 'OPEN';
-        // reset classes
         cell.className = 'square ' + val;
+        if (validSet.has(`${r},${c}`)) cell.classList.add('VALID');
         cell.innerHTML = '';
         if (val === 'BLACK' || val === 'WHITE') {
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -77,34 +88,35 @@ function renderBoard(data) {
         }
         cell.onclick = () => makeMove(r, c);
     });
-    // update status line
+
     const { white, black } = countPieces(board.grid);
     const gameOver = isGameOver(board);
-    let statusText = `Turn: ${board.current_turn} | White: ${white}  Black: ${black}`;
+    const score = `White: ${white}  Black: ${black}`;
     if (gameOver) {
-        const winner = white > black ? 'White wins!' : black > white ? 'Black wins!' : 'Tie!';
-        statusText += ' | Game Over! ' + winner;
+        const winner = white > black ? 'White wins!' : black > white ? 'Black wins!' : "It's a tie!";
+        setStatus(`Game over — ${score} — ${winner}`);
+    } else if (!playerColor) {
+        setStatus(score);
+    } else if (board.current_turn === playerColor) {
+        const colorLabel = playerColor.charAt(0) + playerColor.slice(1).toLowerCase();
+        setStatus(`Your turn (${colorLabel}) — ${score}`);
+    } else {
+        setStatus(`AI is thinking\u2026 — ${score}`);
     }
-    document.getElementById('status').textContent = statusText;
 }
 
 /**
  * Handle a player clicking on a board square.
- * Silently ignores the click if it is not the player's turn.
+ * Uses the cached currentState to avoid an extra server round-trip.
  * @param {number} r - Row index (0-based).
  * @param {number} c - Column index (0-based).
  */
 async function makeMove(r, c) {
-    if (!playerColor) {
-        showError('Please start a game first.');
-        return;
-    }
+    if (!playerColor || isRequestPending) return;
+    if (!currentState || currentState.board.current_turn !== playerColor) return;
+
+    isRequestPending = true;
     try {
-        // only allow clicking when it's player's turn
-        const data = await fetchState();
-        if (data.board.current_turn !== playerColor) {
-            return; // ignore click
-        }
         const res = await fetch('/api/move', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -118,16 +130,26 @@ async function makeMove(r, c) {
         }
     } catch (e) {
         showError('Network error');
+    } finally {
+        isRequestPending = false;
     }
 }
 
 /** Pass the player's turn and refresh the board. */
 document.getElementById('passBtn').onclick = async () => {
+    if (isRequestPending) return;
+    isRequestPending = true;
     try {
-        await fetch('/api/pass', { method: 'POST' });
+        const res = await fetch('/api/pass', { method: 'POST' });
+        if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            showError(body.error || 'Cannot pass');
+        }
         await update();
     } catch (e) {
         showError('Network error');
+    } finally {
+        isRequestPending = false;
     }
 };
 
@@ -135,6 +157,7 @@ document.getElementById('passBtn').onclick = async () => {
 document.getElementById('resetBtn').onclick = async () => {
     try {
         playerColor = null;
+        currentState = null;
         await fetch('/api/reset', { method: 'POST' });
         showControls(false);
         await update();
@@ -157,7 +180,15 @@ function showControls(show) {
  * Called automatically by update() when it detects it is the opponent's turn.
  */
 async function aiMove() {
-    await fetch('/api/opponentmove', { method: 'POST' });
+    if (isRequestPending) return;
+    isRequestPending = true;
+    try {
+        await fetch('/api/opponentmove', { method: 'POST' });
+    } catch (e) {
+        showError('Network error');
+    } finally {
+        isRequestPending = false;
+    }
     await update();
 }
 
@@ -167,25 +198,24 @@ async function aiMove() {
  */
 async function update() {
     const data = await fetchState();
+    currentState = data;
     renderBoard(data);
-    // if game running and it's opponent's turn, trigger AI move
     if (playerColor && !isGameOver(data.board) && data.board.current_turn !== playerColor) {
-        // small delay to let UI update
-        setTimeout(aiMove, 1000);
+        setTimeout(aiMove, 700);
     }
 }
 
-// start button logic
 /** Start a new game as Black with the selected strategy. */
 document.getElementById('startBlackBtn').onclick = async () => {
     try {
         const strategy = document.getElementById('strategySelect').value;
-        playerColor = 'BLACK';
-        await fetch('/api/start', {
+        const res = await fetch('/api/start', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ color: 'BLACK', strategy })
         });
+        if (!res.ok) throw new Error('Start failed');
+        playerColor = 'BLACK';
         document.getElementById('start-msg').textContent = 'You are playing as Black.';
         showControls(true);
         await update();
@@ -198,12 +228,13 @@ document.getElementById('startBlackBtn').onclick = async () => {
 document.getElementById('startWhiteBtn').onclick = async () => {
     try {
         const strategy = document.getElementById('strategySelect').value;
-        playerColor = 'WHITE';
-        await fetch('/api/start', {
+        const res = await fetch('/api/start', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ color: 'WHITE', strategy })
         });
+        if (!res.ok) throw new Error('Start failed');
+        playerColor = 'WHITE';
         document.getElementById('start-msg').textContent = 'You are playing as White.';
         showControls(true);
         await update();
