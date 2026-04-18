@@ -53,10 +53,19 @@
                 </div>
             </div>
             <div id="game-controls" class="controls" style="display:none;">
-                <button id="passBtn">Pass</button>
-                <button id="resetBtn">Reset</button>
+                <p id="game-info"></p>
+                <div id="play-controls">
+                    <p id="status"></p>
+                    <button id="passBtn">Pass</button>
+                    <button id="resetBtn">New Game</button>
+                </div>
+                <div id="game-over-area" style="display:none;">
+                    <p id="game-over-result"></p>
+                    <p id="game-over-score"></p>
+                    <button id="playAgainBtn">Play Again</button>
+                    <button id="newGameBtn">New Game</button>
+                </div>
             </div>
-            <p id="status"></p>
         </div>
     </div>
     <script src="/static/game.js"></script>

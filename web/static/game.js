@@ -2,6 +2,9 @@
 /** The human player's color ('BLACK' or 'WHITE'), or null before a game is started. */
 let playerColor = null;
 
+/** The AI strategy chosen at game start ('random', 'maxflips', 'smart'). */
+let currentStrategy = null;
+
 /** Last-fetched game state, used to avoid redundant server round-trips. */
 let currentState = null;
 
@@ -10,9 +13,11 @@ let isRequestPending = false;
 
 const VALID_SQUARE_VALUES = new Set(['OPEN', 'BLACK', 'WHITE']);
 
+const STRATEGY_NAMES = { random: 'Random', maxflips: 'Max Flips', smart: 'Smart' };
+
 /**
  * Display an error message in the status bar, auto-clearing after 3 seconds.
- * @param {string} msg - The error text to show.
+ * @param {string} msg
  */
 function showError(msg) {
     const el = document.getElementById('status');
@@ -38,7 +43,7 @@ async function fetchState() {
 
 /**
  * Count the number of BLACK and WHITE pieces on the board grid.
- * @param {string[][]} grid - 8×8 array of 'BLACK', 'WHITE', or 'OPEN'.
+ * @param {string[][]} grid
  * @returns {{ white: number, black: number }}
  */
 function countPieces(grid) {
@@ -54,7 +59,7 @@ function countPieces(grid) {
 
 /**
  * Determine whether the game has ended.
- * @param {Object} board - The board object from the server response.
+ * @param {Object} board
  * @returns {boolean}
  */
 function isGameOver(board) {
@@ -63,8 +68,8 @@ function isGameOver(board) {
 }
 
 /**
- * Re-render all board squares and update the status line from a server response.
- * Marks valid move squares with the VALID CSS class so players can see their options.
+ * Re-render all board squares, update the status line, and show/hide
+ * the game-over panel based on the server response.
  * @param {Object} data - Full game state as returned by any API endpoint.
  */
 function renderBoard(data) {
@@ -91,25 +96,52 @@ function renderBoard(data) {
 
     const { white, black } = countPieces(board.grid);
     const gameOver = isGameOver(board);
-    const score = `White: ${white}  Black: ${black}`;
-    if (gameOver) {
-        const winner = white > black ? 'White wins!' : black > white ? 'Black wins!' : "It's a tie!";
-        setStatus(`Game over — ${score} — ${winner}`);
-    } else if (!playerColor) {
-        setStatus(score);
-    } else if (board.current_turn === playerColor) {
-        const colorLabel = playerColor.charAt(0) + playerColor.slice(1).toLowerCase();
-        setStatus(`Your turn (${colorLabel}) — ${score}`);
+
+    if (gameOver && playerColor) {
+        showGameOver(black, white);
     } else {
-        setStatus(`AI is thinking\u2026 — ${score}`);
+        document.getElementById('play-controls').style.display = '';
+        document.getElementById('game-over-area').style.display = 'none';
+        if (board.current_turn === playerColor) {
+            setStatus(`Your turn — Black: ${black}  White: ${white}`);
+        } else if (playerColor) {
+            setStatus(`AI is thinking\u2026 — Black: ${black}  White: ${white}`);
+        } else {
+            setStatus(`Black: ${black}  White: ${white}`);
+        }
     }
+}
+
+/**
+ * Display the game-over panel with final scores and outcome.
+ * @param {number} black
+ * @param {number} white
+ */
+function showGameOver(black, white) {
+    document.getElementById('play-controls').style.display = 'none';
+    document.getElementById('game-over-area').style.display = '';
+
+    let headline, detail;
+    if (black === white) {
+        headline = "It's a tie!";
+        detail = `Final score: Black ${black} \u2013 White ${white}`;
+    } else {
+        const winColor = black > white ? 'Black' : 'White';
+        const winScore = black > white ? black : white;
+        const loseScore = black > white ? white : black;
+        const margin = winScore - loseScore;
+        const youWon = (winColor === playerColor.charAt(0) + playerColor.slice(1).toLowerCase());
+        headline = `${winColor} wins${youWon ? ' \u2014 you won!' : ' \u2014 you lost.'}`;
+        detail = `Final score: Black ${black} \u2013 White ${white} (${winColor} leads by ${margin})`;
+    }
+
+    document.getElementById('game-over-result').textContent = headline;
+    document.getElementById('game-over-score').textContent = detail + '  Want to play again?';
 }
 
 /**
  * Handle a player clicking on a board square.
  * Uses the cached currentState to avoid an extra server round-trip.
- * @param {number} r - Row index (0-based).
- * @param {number} c - Column index (0-based).
  */
 async function makeMove(r, c) {
     if (!playerColor || isRequestPending) return;
@@ -135,7 +167,6 @@ async function makeMove(r, c) {
     }
 }
 
-/** Pass the player's turn and refresh the board. */
 document.getElementById('passBtn').onclick = async () => {
     if (isRequestPending) return;
     isRequestPending = true;
@@ -153,14 +184,39 @@ document.getElementById('passBtn').onclick = async () => {
     }
 };
 
-/** Reset the game, clear player state, and return to the start screen. */
+/** Return to the start screen without restarting automatically. */
+function goToStartScreen() {
+    playerColor = null;
+    currentStrategy = null;
+    currentState = null;
+    document.getElementById('game-controls').style.display = 'none';
+    document.getElementById('start-area').style.display = '';
+}
+
 document.getElementById('resetBtn').onclick = async () => {
     try {
-        playerColor = null;
-        currentState = null;
         await fetch('/api/reset', { method: 'POST' });
-        showControls(false);
+        goToStartScreen();
         await update();
+    } catch (e) {
+        showError('Network error');
+    }
+};
+
+document.getElementById('newGameBtn').onclick = async () => {
+    try {
+        await fetch('/api/reset', { method: 'POST' });
+        goToStartScreen();
+        await update();
+    } catch (e) {
+        showError('Network error');
+    }
+};
+
+document.getElementById('playAgainBtn').onclick = async () => {
+    if (!playerColor || !currentStrategy) return;
+    try {
+        await startGame(playerColor, currentStrategy);
     } catch (e) {
         showError('Network error');
     }
@@ -168,7 +224,7 @@ document.getElementById('resetBtn').onclick = async () => {
 
 /**
  * Toggle between the start screen and the in-game controls.
- * @param {boolean} show - True to show game controls, false to show the start area.
+ * @param {boolean} show
  */
 function showControls(show) {
     document.getElementById('game-controls').style.display = show ? '' : 'none';
@@ -176,9 +232,38 @@ function showControls(show) {
 }
 
 /**
- * Ask the server to make one AI opponent move, then refresh the board.
- * Called automatically by update() when it detects it is the opponent's turn.
+ * Populate the persistent "game-info" label with the current player/strategy.
  */
+function updateGameInfo() {
+    const colorLabel = playerColor === 'BLACK' ? 'Black' : 'White';
+    const oppLabel = playerColor === 'BLACK' ? 'White' : 'Black';
+    const stratLabel = STRATEGY_NAMES[currentStrategy] || currentStrategy;
+    document.getElementById('game-info').textContent =
+        `You: ${colorLabel}  \u00b7  Opponent (${stratLabel}): ${oppLabel}`;
+}
+
+/**
+ * Start or restart a game with the given color and strategy.
+ * @param {string} color - 'BLACK' or 'WHITE'
+ * @param {string} strategy
+ */
+async function startGame(color, strategy) {
+    const res = await fetch('/api/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ color, strategy })
+    });
+    if (!res.ok) throw new Error('Start failed');
+    playerColor = color;
+    currentStrategy = strategy;
+    updateGameInfo();
+    // reset to play-controls view in case we're coming from game-over
+    document.getElementById('play-controls').style.display = '';
+    document.getElementById('game-over-area').style.display = 'none';
+    showControls(true);
+    await update();
+}
+
 async function aiMove() {
     if (isRequestPending) return;
     isRequestPending = true;
@@ -192,10 +277,6 @@ async function aiMove() {
     await update();
 }
 
-/**
- * Fetch the latest game state, render it, and trigger an AI move if it is
- * the opponent's turn and the game is still in progress.
- */
 async function update() {
     const data = await fetchState();
     currentState = data;
@@ -205,39 +286,19 @@ async function update() {
     }
 }
 
-/** Start a new game as Black with the selected strategy. */
 document.getElementById('startBlackBtn').onclick = async () => {
     try {
         const strategy = document.getElementById('strategySelect').value;
-        const res = await fetch('/api/start', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ color: 'BLACK', strategy })
-        });
-        if (!res.ok) throw new Error('Start failed');
-        playerColor = 'BLACK';
-        document.getElementById('start-msg').textContent = 'You are playing as Black.';
-        showControls(true);
-        await update();
+        await startGame('BLACK', strategy);
     } catch (e) {
         showError('Network error');
     }
 };
 
-/** Start a new game as White with the selected strategy. */
 document.getElementById('startWhiteBtn').onclick = async () => {
     try {
         const strategy = document.getElementById('strategySelect').value;
-        const res = await fetch('/api/start', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ color: 'WHITE', strategy })
-        });
-        if (!res.ok) throw new Error('Start failed');
-        playerColor = 'WHITE';
-        document.getElementById('start-msg').textContent = 'You are playing as White.';
-        showControls(true);
-        await update();
+        await startGame('WHITE', strategy);
     } catch (e) {
         showError('Network error');
     }
