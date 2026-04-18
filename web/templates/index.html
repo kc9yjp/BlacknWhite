@@ -2,72 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BlacknWhite Web</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlacknWhite</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    
     <div id="game">
         <!-- hidden SVG definitions for disk piece -->
         <svg width="0" height="0" style="position:absolute; visibility:hidden;">
             <defs>
                 <symbol id="disk" viewBox="0 0 100 100">
-                    <!-- thin grey outline for depth (~1.5px) -->
                     <circle cx="50" cy="50" r="48.5" fill="gray" />
-                    <!-- main disk uses currentColor, slightly smaller to reveal outline -->
                     <circle cx="50" cy="50" r="45" fill="currentColor" />
                 </symbol>
             </defs>
         </svg>
 
         <div id="board">
-            <!-- static 8×8 grid with data attributes and initial pieces -->
             <!-- row 0 -->
-            <div class="square OPEN" data-row="0" data-col="0"></div><div class="square OPEN" data-row="0" data-col="1"></div><div class="square OPEN" data-row="0" data-col="2"></div><div class="square OPEN" data-row="0" data-col="3"></div>
-            <div class="square OPEN" data-row="0" data-col="4"></div><div class="square OPEN" data-row="0" data-col="5"></div><div class="square OPEN" data-row="0" data-col="6"></div><div class="square OPEN" data-row="0" data-col="7"></div>
+            <div class="square OPEN" data-row="0" data-col="0"></div><div class="square OPEN" data-row="0" data-col="1"></div><div class="square OPEN" data-row="0" data-col="2"></div><div class="square OPEN" data-row="0" data-col="3"></div><div class="square OPEN" data-row="0" data-col="4"></div><div class="square OPEN" data-row="0" data-col="5"></div><div class="square OPEN" data-row="0" data-col="6"></div><div class="square OPEN" data-row="0" data-col="7"></div>
             <!-- row 1 -->
-            <div class="square OPEN" data-row="1" data-col="0"></div><div class="square OPEN" data-row="1" data-col="1"></div><div class="square OPEN" data-row="1" data-col="2"></div><div class="square OPEN" data-row="1" data-col="3"></div>
-            <div class="square OPEN" data-row="1" data-col="4"></div><div class="square OPEN" data-row="1" data-col="5"></div><div class="square OPEN" data-row="1" data-col="6"></div><div class="square OPEN" data-row="1" data-col="7"></div>
+            <div class="square OPEN" data-row="1" data-col="0"></div><div class="square OPEN" data-row="1" data-col="1"></div><div class="square OPEN" data-row="1" data-col="2"></div><div class="square OPEN" data-row="1" data-col="3"></div><div class="square OPEN" data-row="1" data-col="4"></div><div class="square OPEN" data-row="1" data-col="5"></div><div class="square OPEN" data-row="1" data-col="6"></div><div class="square OPEN" data-row="1" data-col="7"></div>
             <!-- row 2 -->
-            <div class="square OPEN" data-row="2" data-col="0"></div><div class="square OPEN" data-row="2" data-col="1"></div><div class="square OPEN" data-row="2" data-col="2"></div><div class="square OPEN" data-row="2" data-col="3"></div>
-            <div class="square OPEN" data-row="2" data-col="4"></div><div class="square OPEN" data-row="2" data-col="5"></div><div class="square OPEN" data-row="2" data-col="6"></div><div class="square OPEN" data-row="2" data-col="7"></div>
-            <!-- row 3 (start) -->
-            <div class="square OPEN" data-row="3" data-col="0"></div><div class="square OPEN" data-row="3" data-col="1"></div><div class="square OPEN" data-row="3" data-col="2"></div>
-            <div class="square WHITE" data-row="3" data-col="3"><svg class="piece white"><use href="#disk"></use></svg></div>
-            <div class="square BLACK" data-row="3" data-col="4"><svg class="piece black"><use href="#disk"></use></svg></div>
-            <div class="square OPEN" data-row="3" data-col="5"></div><div class="square OPEN" data-row="3" data-col="6"></div><div class="square OPEN" data-row="3" data-col="7"></div>
-            <!-- row 4 (start) -->
-            <div class="square OPEN" data-row="4" data-col="0"></div><div class="square OPEN" data-row="4" data-col="1"></div><div class="square OPEN" data-row="4" data-col="2"></div>
-            <div class="square BLACK" data-row="4" data-col="3"><svg class="piece black"><use href="#disk"></use></svg></div>
-            <div class="square WHITE" data-row="4" data-col="4"><svg class="piece white"><use href="#disk"></use></svg></div>
-            <div class="square OPEN" data-row="4" data-col="5"></div><div class="square OPEN" data-row="4" data-col="6"></div><div class="square OPEN" data-row="4" data-col="7"></div>
+            <div class="square OPEN" data-row="2" data-col="0"></div><div class="square OPEN" data-row="2" data-col="1"></div><div class="square OPEN" data-row="2" data-col="2"></div><div class="square OPEN" data-row="2" data-col="3"></div><div class="square OPEN" data-row="2" data-col="4"></div><div class="square OPEN" data-row="2" data-col="5"></div><div class="square OPEN" data-row="2" data-col="6"></div><div class="square OPEN" data-row="2" data-col="7"></div>
+            <!-- row 3 -->
+            <div class="square OPEN" data-row="3" data-col="0"></div><div class="square OPEN" data-row="3" data-col="1"></div><div class="square OPEN" data-row="3" data-col="2"></div><div class="square WHITE" data-row="3" data-col="3"><svg class="piece white"><use href="#disk"></use></svg></div><div class="square BLACK" data-row="3" data-col="4"><svg class="piece black"><use href="#disk"></use></svg></div><div class="square OPEN" data-row="3" data-col="5"></div><div class="square OPEN" data-row="3" data-col="6"></div><div class="square OPEN" data-row="3" data-col="7"></div>
+            <!-- row 4 -->
+            <div class="square OPEN" data-row="4" data-col="0"></div><div class="square OPEN" data-row="4" data-col="1"></div><div class="square OPEN" data-row="4" data-col="2"></div><div class="square BLACK" data-row="4" data-col="3"><svg class="piece black"><use href="#disk"></use></svg></div><div class="square WHITE" data-row="4" data-col="4"><svg class="piece white"><use href="#disk"></use></svg></div><div class="square OPEN" data-row="4" data-col="5"></div><div class="square OPEN" data-row="4" data-col="6"></div><div class="square OPEN" data-row="4" data-col="7"></div>
             <!-- row 5 -->
-            <div class="square OPEN" data-row="5" data-col="0"></div><div class="square OPEN" data-row="5" data-col="1"></div><div class="square OPEN" data-row="5" data-col="2"></div><div class="square OPEN" data-row="5" data-col="3"></div>
-            <div class="square OPEN" data-row="5" data-col="4"></div><div class="square OPEN" data-row="5" data-col="5"></div><div class="square OPEN" data-row="5" data-col="6"></div><div class="square OPEN" data-row="5" data-col="7"></div>
+            <div class="square OPEN" data-row="5" data-col="0"></div><div class="square OPEN" data-row="5" data-col="1"></div><div class="square OPEN" data-row="5" data-col="2"></div><div class="square OPEN" data-row="5" data-col="3"></div><div class="square OPEN" data-row="5" data-col="4"></div><div class="square OPEN" data-row="5" data-col="5"></div><div class="square OPEN" data-row="5" data-col="6"></div><div class="square OPEN" data-row="5" data-col="7"></div>
             <!-- row 6 -->
-            <div class="square OPEN" data-row="6" data-col="0"></div><div class="square OPEN" data-row="6" data-col="1"></div><div class="square OPEN" data-row="6" data-col="2"></div><div class="square OPEN" data-row="6" data-col="3"></div>
-            <div class="square OPEN" data-row="6" data-col="4"></div><div class="square OPEN" data-row="6" data-col="5"></div><div class="square OPEN" data-row="6" data-col="6"></div><div class="square OPEN" data-row="6" data-col="7"></div>
+            <div class="square OPEN" data-row="6" data-col="0"></div><div class="square OPEN" data-row="6" data-col="1"></div><div class="square OPEN" data-row="6" data-col="2"></div><div class="square OPEN" data-row="6" data-col="3"></div><div class="square OPEN" data-row="6" data-col="4"></div><div class="square OPEN" data-row="6" data-col="5"></div><div class="square OPEN" data-row="6" data-col="6"></div><div class="square OPEN" data-row="6" data-col="7"></div>
             <!-- row 7 -->
-            <div class="square OPEN" data-row="7" data-col="0"></div><div class="square OPEN" data-row="7" data-col="1"></div><div class="square OPEN" data-row="7" data-col="2"></div><div class="square OPEN" data-row="7" data-col="3"></div>
-            <div class="square OPEN" data-row="7" data-col="4"></div><div class="square OPEN" data-row="7" data-col="5"></div><div class="square OPEN" data-row="7" data-col="6"></div><div class="square OPEN" data-row="7" data-col="7"></div>
+            <div class="square OPEN" data-row="7" data-col="0"></div><div class="square OPEN" data-row="7" data-col="1"></div><div class="square OPEN" data-row="7" data-col="2"></div><div class="square OPEN" data-row="7" data-col="3"></div><div class="square OPEN" data-row="7" data-col="4"></div><div class="square OPEN" data-row="7" data-col="5"></div><div class="square OPEN" data-row="7" data-col="6"></div><div class="square OPEN" data-row="7" data-col="7"></div>
         </div>
+
         <div id="info">
             <h1>Black and White</h1>
             <div id="start-area">
-                <p id="start-msg">Select black or white to begin play.</p>
+                <p id="start-msg">Select black or white to begin.</p>
                 <label for="strategySelect">Opponent strategy:</label>
                 <select id="strategySelect">
                     <option value="random">Random</option>
                     <option value="maxflips" selected>Max Flips</option>
                     <option value="smart">Smart</option>
                 </select>
-                <button id="startBlackBtn">Start as Black</button>
-                <button id="startWhiteBtn">Start as White</button>
+                <div>
+                    <button id="startBlackBtn">Play as Black</button>
+                    <button id="startWhiteBtn">Play as White</button>
+                </div>
             </div>
             <div id="game-controls" class="controls" style="display:none;">
-                <button id="passBtn">Pass</button>
-                <button id="resetBtn">Reset</button>
-            </div>            <p id="status"></p>        </div>
+                <p id="game-info"></p>
+                <div id="play-controls">
+                    <p id="status"></p>
+                    <button id="passBtn">Pass</button>
+                    <button id="resetBtn">New Game</button>
+                </div>
+                <div id="game-over-area" style="display:none;">
+                    <p id="game-over-result"></p>
+                    <p id="game-over-score"></p>
+                    <button id="playAgainBtn">Play Again</button>
+                    <button id="newGameBtn">New Game</button>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="/static/game.js"></script>
 </body>
