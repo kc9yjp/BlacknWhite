@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, Response
 from game.board import Board
 from game.square import Square
 import os
@@ -99,7 +99,7 @@ def api_board():
     else:
         state = GameState.from_json(session[SESSION_KEY])
 
-    return state.to_json()
+    return Response(state.to_json(), mimetype='application/json')
 
 
 @app.route("/api/reset", methods=["POST"])
@@ -132,7 +132,7 @@ def api_start():
 
     state = GameState(strategy=strategy, color=color)
     session[SESSION_KEY] = state.to_json()
-    return state.to_json()
+    return Response(state.to_json(), mimetype='application/json')
 
 
 @app.route("/api/pass", methods=["POST"])
@@ -152,7 +152,7 @@ def api_pass():
 
     state.board.pass_turn()
     session[SESSION_KEY] = state.to_json()
-    return state.to_json()
+    return Response(state.to_json(), mimetype='application/json')
 
 
 @app.route("/api/move", methods=["POST"])
@@ -196,7 +196,7 @@ def api_move():
         return jsonify({"error": "Invalid move"}), 400
 
     session[SESSION_KEY] = state.to_json()
-    return state.to_json()
+    return Response(state.to_json(), mimetype='application/json')
 
 
 @app.route("/api/opponentmove", methods=["POST"])
@@ -234,7 +234,7 @@ def api_opponent_move():
             state.board.pass_turn()
 
     session[SESSION_KEY] = state.to_json()
-    return state.to_json()
+    return Response(state.to_json(), mimetype='application/json')
 
 
 if __name__ == "__main__":
