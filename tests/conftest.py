@@ -4,7 +4,7 @@ from werkzeug.serving import make_server
 
 from web.app import app as flask_app
 
-_CHROMIUM_PATH = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'
+_CHROMIUM_PATH = '/opt/pw-browsers/chromium-1208/chrome-linux64/chrome'
 _LIVE_PORT = 5099
 
 flask_app.config['SECRET_KEY'] = 'test-secret-key'
